@@ -1,3 +1,7 @@
-fn main() {
-  tauri_build::build()
+use std::error::Error;
+
+fn main() -> Result<(), Box<dyn Error>> {
+  tonic_build::compile_protos("../proto/database.proto")?;
+  tauri_build::build();
+  Ok(())
 }

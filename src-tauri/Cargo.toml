@@ -12,12 +12,18 @@ rust-version = "1.60"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
+tonic-build = "0.11"
 tauri-build = { version = "1.5.3", features = [] }
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.7.0", features = [ "window-show", "window-start-dragging", "window-close", "window-unminimize", "window-minimize", "window-hide", "window-unmaximize"] }
+
+tonic = "0.11"
+prost = "0.12"
+tokio = { version = "1.0", features = ["rt-multi-thread", "macros", "sync", "time"] }
+tokio-stream = "0.1"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
