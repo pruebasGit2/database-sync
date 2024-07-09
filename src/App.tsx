@@ -1,9 +1,7 @@
+import { Main } from "./pages/main/main"
+
 function App() {
-  return (
-    <div className='text-3xl font-bold underline'>
-      tailwind
-    </div>
-  )
+  return <Main></Main>
 }
 
 export default App
