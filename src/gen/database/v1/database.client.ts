@@ -4,6 +4,9 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { Database } from "./database";
+import type { Script } from "./database";
+import type { GetScriptsRequest } from "./database";
+import type { ServerStreamingCall } from "@protobuf-ts/runtime-rpc";
 import { stackIntercept } from "@protobuf-ts/runtime-rpc";
 import type { Databases } from "./database";
 import type { Connection } from "./database";
@@ -17,6 +20,10 @@ export interface IDatabaseClient {
      * @generated from protobuf rpc: GetDatabases(database.Connection) returns (database.Databases);
      */
     getDatabases(input: Connection, options?: RpcOptions): UnaryCall<Connection, Databases>;
+    /**
+     * @generated from protobuf rpc: GetScripts(database.GetScriptsRequest) returns (stream database.Script);
+     */
+    getScripts(input: GetScriptsRequest, options?: RpcOptions): ServerStreamingCall<GetScriptsRequest, Script>;
 }
 /**
  * @generated from protobuf service database.Database
@@ -33,5 +40,12 @@ export class DatabaseClient implements IDatabaseClient, ServiceInfo {
     getDatabases(input: Connection, options?: RpcOptions): UnaryCall<Connection, Databases> {
         const method = this.methods[0], opt = this._transport.mergeOptions(options);
         return stackIntercept<Connection, Databases>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: GetScripts(database.GetScriptsRequest) returns (stream database.Script);
+     */
+    getScripts(input: GetScriptsRequest, options?: RpcOptions): ServerStreamingCall<GetScriptsRequest, Script> {
+        const method = this.methods[1], opt = this._transport.mergeOptions(options);
+        return stackIntercept<GetScriptsRequest, Script>("serverStreaming", this._transport, method, opt, input);
     }
 }

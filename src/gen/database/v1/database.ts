@@ -29,6 +29,32 @@ export interface Databases {
      */
     database: string[];
 }
+/**
+ * @generated from protobuf message database.GetScriptsRequest
+ */
+export interface GetScriptsRequest {
+    /**
+     * @generated from protobuf field: string connectionString = 1;
+     */
+    connectionString: string;
+    /**
+     * @generated from protobuf field: repeated string databasesBase = 3;
+     */
+    databasesBase: string[];
+    /**
+     * @generated from protobuf field: repeated string databases = 4;
+     */
+    databases: string[];
+}
+/**
+ * @generated from protobuf message database.Script
+ */
+export interface Script {
+    /**
+     * @generated from protobuf field: string Script = 1 [json_name = "Script"];
+     */
+    script: string;
+}
 // @generated message type with reflection information, may provide speed optimized methods
 class Connection$Type extends MessageType<Connection> {
     constructor() {
@@ -123,9 +149,120 @@ class Databases$Type extends MessageType<Databases> {
  * @generated MessageType for protobuf message database.Databases
  */
 export const Databases = new Databases$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class GetScriptsRequest$Type extends MessageType<GetScriptsRequest> {
+    constructor() {
+        super("database.GetScriptsRequest", [
+            { no: 1, name: "connectionString", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "databasesBase", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "databases", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<GetScriptsRequest>): GetScriptsRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.connectionString = "";
+        message.databasesBase = [];
+        message.databases = [];
+        if (value !== undefined)
+            reflectionMergePartial<GetScriptsRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetScriptsRequest): GetScriptsRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string connectionString */ 1:
+                    message.connectionString = reader.string();
+                    break;
+                case /* repeated string databasesBase */ 3:
+                    message.databasesBase.push(reader.string());
+                    break;
+                case /* repeated string databases */ 4:
+                    message.databases.push(reader.string());
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: GetScriptsRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string connectionString = 1; */
+        if (message.connectionString !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.connectionString);
+        /* repeated string databasesBase = 3; */
+        for (let i = 0; i < message.databasesBase.length; i++)
+            writer.tag(3, WireType.LengthDelimited).string(message.databasesBase[i]);
+        /* repeated string databases = 4; */
+        for (let i = 0; i < message.databases.length; i++)
+            writer.tag(4, WireType.LengthDelimited).string(message.databases[i]);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message database.GetScriptsRequest
+ */
+export const GetScriptsRequest = new GetScriptsRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class Script$Type extends MessageType<Script> {
+    constructor() {
+        super("database.Script", [
+            { no: 1, name: "Script", kind: "scalar", jsonName: "Script", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<Script>): Script {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.script = "";
+        if (value !== undefined)
+            reflectionMergePartial<Script>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Script): Script {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string Script = 1 [json_name = "Script"];*/ 1:
+                    message.script = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: Script, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string Script = 1 [json_name = "Script"]; */
+        if (message.script !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.script);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message database.Script
+ */
+export const Script = new Script$Type();
 /**
  * @generated ServiceType for protobuf service database.Database
  */
 export const Database = new ServiceType("database.Database", [
-    { name: "GetDatabases", options: {}, I: Connection, O: Databases }
+    { name: "GetDatabases", options: {}, I: Connection, O: Databases },
+    { name: "GetScripts", serverStreaming: true, options: {}, I: GetScriptsRequest, O: Script }
 ]);

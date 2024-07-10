@@ -4,6 +4,7 @@ package database;
 
 service Database {
   rpc GetDatabases (Connection) returns (Databases) {}
+  rpc GetScripts (GetScriptsRequest) returns (stream Script) {}
 }
 
 message Connection {
@@ -12,4 +13,14 @@ message Connection {
 
 message Databases {
   repeated string database = 1;
+}
+
+message GetScriptsRequest {
+  string connectionString = 1;
+  repeated string databasesBase = 3;
+  repeated string databases = 4;
+}
+
+message Script {
+  string Script = 1;
 }

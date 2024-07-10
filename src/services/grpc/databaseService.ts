@@ -6,6 +6,7 @@
 //const client = new DatabaseClient("[::1]:777");
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { DatabaseClient } from "../../gen/database/v1/database.client";
+import { GetScriptsRequest } from "../../gen/database/v1/database";
 
 const transport = new GrpcWebFetchTransport({
     baseUrl: "http://192.168.10.12:3500",
@@ -24,6 +25,10 @@ export class DatabaseService {
                     res([]);
                 })
         });
+    }
+
+    static getScripts(request: GetScriptsRequest) {
+        return client.getScripts(request);
     }
 
 }
