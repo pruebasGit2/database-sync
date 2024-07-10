@@ -6,7 +6,6 @@
 //const client = new DatabaseClient("[::1]:777");
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { DatabaseClient } from "../../gen/database/v1/database.client";
-import { Empty } from "../../gen/google/protobuf/empty";
 
 const transport = new GrpcWebFetchTransport({
     baseUrl: "http://192.168.10.12:3500",
@@ -16,9 +15,9 @@ const transport = new GrpcWebFetchTransport({
 const client = new DatabaseClient(transport);
 export class DatabaseService {
 
-    static getDatabases(): Promise<string[]> {
+    static getDatabases(connectionString: string): Promise<string[]> {
         return new Promise((res) => {
-            client.getDatabases(Empty)
+            client.getDatabases({connectionString})
                 .then(d => res(d.response.database))
                 .catch(e => {
                     console.log(e);

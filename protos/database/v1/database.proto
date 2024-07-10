@@ -1,10 +1,13 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
 package database;
 
 service Database {
-  rpc GetDatabases (google.protobuf.Empty) returns (Databases) {}
+  rpc GetDatabases (Connection) returns (Databases) {}
+}
+
+message Connection {
+  string connectionString = 1;
 }
 
 message Databases {

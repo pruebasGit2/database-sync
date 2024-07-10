@@ -1,4 +1,4 @@
-use crate::proto::{self, Databases};
+use crate::proto::{self, Connection, Databases};
 
 use proto::database_server::Database;
 use tonic::{Request, Response, Status};
@@ -17,7 +17,7 @@ impl Database for DatabaseService {
 
     async fn get_databases(
         &self,
-        _request: Request<()>
+        _request: Request<Connection>
     ) -> Result<Response<Databases>, Status> {
         Ok(Response::new(Databases { database: vec![String::from("0001"), String::from("0002")] }))        
     }

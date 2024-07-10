@@ -6,7 +6,7 @@ import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { Database } from "./database";
 import { stackIntercept } from "@protobuf-ts/runtime-rpc";
 import type { Databases } from "./database";
-import type { Empty } from "../../google/protobuf/empty";
+import type { Connection } from "./database";
 import type { UnaryCall } from "@protobuf-ts/runtime-rpc";
 import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
 /**
@@ -14,9 +14,9 @@ import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
  */
 export interface IDatabaseClient {
     /**
-     * @generated from protobuf rpc: GetDatabases(google.protobuf.Empty) returns (database.Databases);
+     * @generated from protobuf rpc: GetDatabases(database.Connection) returns (database.Databases);
      */
-    getDatabases(input: Empty, options?: RpcOptions): UnaryCall<Empty, Databases>;
+    getDatabases(input: Connection, options?: RpcOptions): UnaryCall<Connection, Databases>;
 }
 /**
  * @generated from protobuf service database.Database
@@ -28,10 +28,10 @@ export class DatabaseClient implements IDatabaseClient, ServiceInfo {
     constructor(private readonly _transport: RpcTransport) {
     }
     /**
-     * @generated from protobuf rpc: GetDatabases(google.protobuf.Empty) returns (database.Databases);
+     * @generated from protobuf rpc: GetDatabases(database.Connection) returns (database.Databases);
      */
-    getDatabases(input: Empty, options?: RpcOptions): UnaryCall<Empty, Databases> {
+    getDatabases(input: Connection, options?: RpcOptions): UnaryCall<Connection, Databases> {
         const method = this.methods[0], opt = this._transport.mergeOptions(options);
-        return stackIntercept<Empty, Databases>("unary", this._transport, method, opt, input);
+        return stackIntercept<Connection, Databases>("unary", this._transport, method, opt, input);
     }
 }
