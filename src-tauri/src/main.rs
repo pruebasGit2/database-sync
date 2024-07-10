@@ -18,6 +18,8 @@ pub async fn run_grpc_server(
     let addr = "[::1]:777".parse().unwrap();
     let svc = DatabaseServer::new(DatabaseService::new());
 
+    println!("[grpc]: server on [::1]:777");
+
     Server::builder()
         .add_service(svc)
         .serve_with_shutdown(addr, async {
@@ -33,6 +35,7 @@ async fn main() {
     let (_, shutdown_rx) = oneshot::channel::<()>();
 
     spawn(async move {
+        println!("START");
         if let Err(e) = run_grpc_server(shutdown_rx).await {
             eprintln!("Failed to run gRPC server: {}", e);
         }

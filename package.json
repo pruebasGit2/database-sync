@@ -11,6 +11,7 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@protobuf-ts/plugin": "^2.9.4",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@tauri-apps/api": "^1.6.0",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.6.0",
+    "@types/google-protobuf": "^3.15.12",
     "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
