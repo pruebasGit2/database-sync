@@ -2,6 +2,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod grpc;
+mod database;
+mod utils;
 
 pub mod proto {
     tonic::include_proto!("database");

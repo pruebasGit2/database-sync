@@ -22,5 +22,6 @@ message GetScriptsRequest {
 }
 
 message Script {
-  string Script = 1;
+  string database = 1;
+  string Script = 2;
 }

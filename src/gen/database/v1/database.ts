@@ -51,7 +51,11 @@ export interface GetScriptsRequest {
  */
 export interface Script {
     /**
-     * @generated from protobuf field: string Script = 1 [json_name = "Script"];
+     * @generated from protobuf field: string database = 1;
+     */
+    database: string;
+    /**
+     * @generated from protobuf field: string Script = 2 [json_name = "Script"];
      */
     script: string;
 }
@@ -216,11 +220,13 @@ export const GetScriptsRequest = new GetScriptsRequest$Type();
 class Script$Type extends MessageType<Script> {
     constructor() {
         super("database.Script", [
-            { no: 1, name: "Script", kind: "scalar", jsonName: "Script", T: 9 /*ScalarType.STRING*/ }
+            { no: 1, name: "database", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "Script", kind: "scalar", jsonName: "Script", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<Script>): Script {
         const message = globalThis.Object.create((this.messagePrototype!));
+        message.database = "";
         message.script = "";
         if (value !== undefined)
             reflectionMergePartial<Script>(this, message, value);
@@ -231,7 +237,10 @@ class Script$Type extends MessageType<Script> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string Script = 1 [json_name = "Script"];*/ 1:
+                case /* string database */ 1:
+                    message.database = reader.string();
+                    break;
+                case /* string Script = 2 [json_name = "Script"];*/ 2:
                     message.script = reader.string();
                     break;
                 default:
@@ -246,9 +255,12 @@ class Script$Type extends MessageType<Script> {
         return message;
     }
     internalBinaryWrite(message: Script, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string Script = 1 [json_name = "Script"]; */
+        /* string database = 1; */
+        if (message.database !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.database);
+        /* string Script = 2 [json_name = "Script"]; */
         if (message.script !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.script);
+            writer.tag(2, WireType.LengthDelimited).string(message.script);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
