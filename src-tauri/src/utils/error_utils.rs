@@ -1,7 +1,7 @@
 pub enum DbError {
     Db(tiberius::error::Error),
     Io(std::io::Error),
-    Parse(url::ParseError)
+    Cstr(connection_string::Error)
 }
 
 impl From<tiberius::error::Error> for DbError {
@@ -16,9 +16,9 @@ impl From<std::io::Error> for DbError {
     }
 }
 
-impl From<url::ParseError> for DbError {
-    fn from(value: url::ParseError) -> Self {
-        Self::Parse(value)
+impl From<connection_string::Error> for DbError {
+    fn from(value: connection_string::Error) -> Self {
+        Self::Cstr(value)
     }
 }
 
@@ -33,7 +33,7 @@ impl std::fmt::Display for DbError {
         match self {
             Self::Db(e) => write!(f, "ParseIntError: {}", e.to_string()),
             Self::Io(e) => write!(f, "ParseFloatError: {}", e.to_string()),
-            Self::Parse(e) => write!(f, "Invalid connection string: {}", e.to_string())
+            Self::Cstr(e) => write!(f, "Invalid connection string: {}", e.to_string()),
         }
     }
 }

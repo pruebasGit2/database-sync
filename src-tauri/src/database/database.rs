@@ -1,29 +1,32 @@
+use connection_string::AdoNetString;
 use tiberius::{AuthMethod, Client, Config, Query, Row};
 use tokio::net::TcpStream;
 use tokio_util::compat::TokioAsyncWriteCompatExt;
 
-use crate::utils::{cstr_utils::Cstring, error_utils::DbError};
+use crate::utils::{cstr::CstrGet, error_utils::DbError};
 
 pub struct Database {
-    pub name: String
+    pub name: String,
 }
 
 impl Database {
-
     pub async fn get_all(cstr: &str) -> Result<Vec<Database>, DbError> {
-        let cstring = Cstring::new(cstr)?;
+        let cstring: AdoNetString = cstr.parse()?;
 
         let mut config = Config::new();
-        config.host(cstring.server);
+        config.host(cstring.get_value("server")?);
         config.trust_cert();
-        config.authentication(AuthMethod::sql_server(cstring.user, cstring.password));
+        config.authentication(AuthMethod::sql_server(
+            cstring.get_value("user")?,
+            cstring.get_value("password")?,
+        ));
 
         let tcp = TcpStream::connect(config.get_addr()).await?;
         tcp.set_nodelay(true)?;
 
         let mut client = Client::connect(config, tcp.compat_write()).await?;
 
-        let query = Query::new("SELECT name FROM sys.databases;");
+        let query = Query::new("SELECT name FROM sys.databases ORDER BY name;");
 
         let stream = query.query(&mut client).await?;
         let rows = stream.into_first_result().await?;
@@ -38,16 +41,16 @@ impl Database {
 
         Ok(databases)
     }
-    
 }
 
 impl CollectDb for Database {
-    fn from_row(row: &Row) -> Result<Self, DbError> where Self: Sized {
+    fn from_row(row: &Row) -> Result<Self, DbError>
+    where
+        Self: Sized,
+    {
         let name = row.get_row("name")?.unwrap();
 
-        Ok(Database {
-            name
-        })
+        Ok(Database { name })
     }
 }
 
@@ -61,11 +64,10 @@ pub struct Esquema {
     pub character_maximum_length: Option<i32>,
     pub constraint_type: Option<String>,
     pub referenced_table_name: Option<String>,
-    pub referenced_column_name: Option<String>
+    pub referenced_column_name: Option<String>,
 }
 
 impl Esquema {
-    
     pub async fn get_all(_: &str, database: &str) -> Result<Vec<Esquema>, DbError> {
         let mut config = Config::new();
         config.trust_cert();
@@ -73,7 +75,8 @@ impl Esquema {
         tcp.set_nodelay(true)?;
         let mut client = Client::connect(config, tcp.compat_write()).await?;
 
-        let sql = format!(r#"
+        let sql = format!(
+            r#"
 USE [{}]
 
 SELECT 
@@ -109,7 +112,8 @@ LEFT JOIN
 ORDER BY 
     C.TABLE_SCHEMA, 
     C.TABLE_NAME,
-    C.ORDINAL_POSITION;"#, database
+    C.ORDINAL_POSITION;"#,
+            database
         );
 
         let query = Query::new(sql);
@@ -127,7 +131,6 @@ ORDER BY
 
         Ok(esquemas)
     }
-
 }
 
 impl CollectDb for Esquema {
@@ -153,13 +156,15 @@ impl CollectDb for Esquema {
             character_maximum_length,
             constraint_type,
             referenced_table_name,
-            referenced_column_name
+            referenced_column_name,
         })
     }
 }
 
 pub trait CollectDb {
-    fn from_row(row: &Row) -> Result<Self, DbError> where Self: Sized;
+    fn from_row(row: &Row) -> Result<Self, DbError>
+    where
+        Self: Sized;
 }
 
 pub trait RowUtils {
