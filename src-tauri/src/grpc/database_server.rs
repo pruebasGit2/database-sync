@@ -1,5 +1,3 @@
-use std::{thread, time::Duration};
-
 use crate::{compare::database::Db, database::esquema::Esquema, proto::{self, Connection, Databases, GetScriptsRequest, Script}};
 
 use proto::database_server::Database;
