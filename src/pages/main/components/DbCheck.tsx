@@ -31,11 +31,11 @@ export const DbCheck = ({ db }: DbCheckProps) => {
                     type="checkbox"
                     className="cursor-pointer"
                     checked={db.checked}
-                    onClick={(e) => {
-                        e.stopPropagation();
+                    onChange={() => {
                         if (db.isBase) return;
                         db.setChecked(db.id, !db.checked);
                     }}
+                    onClick={(e) => e.stopPropagation()}
                 />
             </div>
             {db.db}

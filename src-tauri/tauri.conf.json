@@ -71,8 +71,8 @@
         "fullscreen": false,
         "resizable": false,
         "title": "Database Sync",
-        "width": 480,
-        "height": 310,
+        "width": 580,
+        "height": 410,
         "decorations": false
       }
     ]

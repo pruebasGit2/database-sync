@@ -50,13 +50,9 @@ impl Database for DatabaseService {
         tokio::spawn(async move {
 
             for db_base in databases_base {
-                let esquemas_db_base_res = Esquema::get_all(cstr.as_ref(), db_base.as_ref()).await;
-                let esquemas_db_base = match esquemas_db_base_res {
+                let esquemas_db_base = match Esquema::get_all(cstr.as_ref(), &db_base).await {
                     Ok(esquemas) => esquemas,
-                    Err(err) => {
-                        eprintln!("[grpc-server]: Cannot get esquemas for db '{}': {:?}", db_base, err);
-                        continue
-                    }
+                    Err(_) => continue
                 };
 
                 let mut database_base = Db::new(db_base.clone(), esquemas_db_base);
@@ -66,21 +62,15 @@ impl Database for DatabaseService {
                         continue;
                     }
 
-                    let esquemas_db_res = Esquema::get_all(cstr.as_ref(), db).await;
-                    let esquemas_db = match esquemas_db_res {
+                    let esquemas_db = match Esquema::get_all(cstr.as_ref(), db).await {
                         Ok(esquemas) => esquemas,
-                        Err(err) => {
-                            eprintln!("[grpc-server]: Cannot get esquemas for db '{}': {:?}", db, err);
-                            Vec::new()
-                        }
+                        Err(_) => continue
                     };
 
                     let mut database_base_other = Db::new(db.clone(), esquemas_db); 
 
                     for script in database_base.compare(&mut database_base_other) {
-                        if let Err(_) = tx.send(Ok(Script { script, database: db.clone() })).await {
-                            eprintln!("[grpc-server]: Error sending script");
-                        }
+                        let _ = tx.send(Ok(Script { script, database: db.clone() })).await;
                     }
                 }
             }
