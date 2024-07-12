@@ -6,7 +6,7 @@
 //const client = new DatabaseClient("[::1]:777");
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { DatabaseClient } from "../../gen/database/v1/database.client";
-import { GetScriptsRequest } from "../../gen/database/v1/database";
+import { GetScriptsRequest, Script } from "../../gen/database/v1/database";
 import toast from "react-hot-toast";
 import { RpcError } from "@protobuf-ts/runtime-rpc";
 
@@ -39,6 +39,30 @@ export class DatabaseService {
         return client.getScripts(request);
     }
 
+    static async *getScripts2(request: GetScriptsRequest): AsyncGenerator<Script> {
+        const stream = client.getScripts(request);
+        let resolve: (value: void) => void = () => {};
+        let reject: (reason?: any) => void = () => {};
+
+        const prom = new Promise((res, rej) => {
+            resolve = res;
+            reject = rej;
+        });
+
+        toast.promise(prom, {
+            loading: "Fetching scripts...",
+            error: "Error fetching scripts",
+            success: "Scripts Feched"
+        })
+
+        resolve();
+
+        for await (let res of stream.responses) {
+            yield res;
+        }
+    }
+
 }
+
 
 
