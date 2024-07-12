@@ -38,11 +38,9 @@ export class DatabaseService {
     static async *getScripts(request: GetScriptsRequest): AsyncGenerator<Script> {
         const stream = client.getScripts(request);
         let resolve: (value: void) => void = () => {};
-        let reject: (reason?: any) => void = () => {};
 
-        const prom = new Promise((res, rej) => {
+        const prom = new Promise((res) => {
             resolve = res;
-            reject = rej;
         });
 
         toast.promise(prom, {
@@ -51,7 +49,7 @@ export class DatabaseService {
             success: "Scripts Feched"
         })
 
-        for await (let res of stream.responses) {
+        for await (const res of stream.responses) {
             yield res;
         }
 

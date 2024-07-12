@@ -32,7 +32,7 @@ Array.prototype.toDict = function <T>(this: Array<T>, cb: callback<T>) {
 }
 
 Array.prototype.toArrayDict = function <T>(this: Array<T>, cb: callback<T>) {
-    var dict: { [key: string]: T[] } = {};
+    const dict: { [key: string]: T[] } = {};
     this.forEach(item => {
         const _key = cb(item);
         if (_key) {
