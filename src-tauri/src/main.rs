@@ -4,6 +4,7 @@
 mod grpc;
 mod database;
 mod utils;
+mod compare;
 
 pub mod proto {
     tonic::include_proto!("database");

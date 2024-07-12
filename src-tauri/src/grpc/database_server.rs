@@ -1,6 +1,6 @@
 use std::{thread, time::Duration};
 
-use crate::proto::{self, Connection, Databases, GetScriptsRequest, Script};
+use crate::{compare::database::Db, database::esquema::Esquema, proto::{self, Connection, Databases, GetScriptsRequest, Script}};
 
 use proto::database_server::Database;
 use tokio::sync::mpsc;
@@ -30,7 +30,7 @@ impl Database for DatabaseService {
 
         let cstr = _request.get_ref().connection_string.clone();
 
-        let dbs = match database::Database::get_all(cstr.as_str()).await {
+        let dbs = match database::DatabaseSql::get_all(cstr.as_str()).await {
             Ok(dbs) => dbs,
             Err(err) => return Err(Status::new(tonic::Code::Unknown, err)),
         };
@@ -42,14 +42,49 @@ impl Database for DatabaseService {
         &self,
         _request: Request<GetScriptsRequest>,
     ) -> Result<Response<Self::GetScriptsStream>, Status> {
+
+        let cstr = _request.get_ref().connection_string.to_owned();
+        let databases = _request.get_ref().databases.to_owned();
+        let databases_base = _request.get_ref().databases_base.to_owned();
+
         let (tx, rx) = mpsc::channel::<Result<Script, Status>>(2);
         
         tokio::spawn(async move {
-            for i in 0..10 {
-                if let Err(err) = tx.send(Ok(Script { script: format!("script #{}", i), database: "".to_string() })).await {
-                    eprintln!("[grpc-server]: Error sending script reply: {:?}", err);
+
+            for db_base in databases_base {
+                let esquemas_db_base_res = Esquema::get_all(cstr.as_ref(), db_base.as_ref()).await;
+                let esquemas_db_base = match esquemas_db_base_res {
+                    Ok(esquemas) => esquemas,
+                    Err(err) => {
+                        eprintln!("[grpc-server]: Cannot get esquemas for db '{}': {:?}", db_base, err);
+                        continue
+                    }
+                };
+
+                let mut database_base = Db::new(db_base.clone(), esquemas_db_base);
+
+                for db in &databases {
+                    if db_base.eq(db) { 
+                        continue;
+                    }
+
+                    let esquemas_db_res = Esquema::get_all(cstr.as_ref(), db).await;
+                    let esquemas_db = match esquemas_db_res {
+                        Ok(esquemas) => esquemas,
+                        Err(err) => {
+                            eprintln!("[grpc-server]: Cannot get esquemas for db '{}': {:?}", db, err);
+                            Vec::new()
+                        }
+                    };
+
+                    let mut database_base_other = Db::new(db.clone(), esquemas_db); 
+
+                    for script in database_base.compare(&mut database_base_other) {
+                        if let Err(_) = tx.send(Ok(Script { script, database: db.clone() })).await {
+                            eprintln!("[grpc-server]: Error sending script");
+                        }
+                    }
                 }
-                thread::sleep(Duration::from_millis(1000));
             }
         });
 

@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub enum DbError {
     Db(tiberius::error::Error),
     Io(std::io::Error),
