@@ -6,7 +6,7 @@
 //const client = new DatabaseClient("[::1]:777");
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { DatabaseClient } from "../../gen/database/v1/database.client";
-import { GetScriptsRequest, Script } from "../../gen/database/v1/database";
+import { DownloadScriptsRequest, GetScriptsRequest, Script } from "../../gen/database/v1/database";
 import toast from "react-hot-toast";
 import { RpcError } from "@protobuf-ts/runtime-rpc";
 
@@ -32,14 +32,10 @@ export class DatabaseService {
                     return `Fetched ${_res.database.length} databases`
                 }
             });
-        })
+        });
     }
 
-    static getScripts(request: GetScriptsRequest) {
-        return client.getScripts(request);
-    }
-
-    static async *getScripts2(request: GetScriptsRequest): AsyncGenerator<Script> {
+    static async *getScripts(request: GetScriptsRequest): AsyncGenerator<Script> {
         const stream = client.getScripts(request);
         let resolve: (value: void) => void = () => {};
         let reject: (reason?: any) => void = () => {};
@@ -55,12 +51,31 @@ export class DatabaseService {
             success: "Scripts Feched"
         })
 
-        resolve();
-
         for await (let res of stream.responses) {
             yield res;
         }
+
+        resolve();
     }
+
+
+    static saveScripts(request: DownloadScriptsRequest) {
+        return new Promise<void>((res) => {
+            const databasesProm = client.downloadScripts(request);
+
+            toast.promise(databasesProm.response.wait(300), {
+                loading: 'Saving scripts...',
+                error: (_err: RpcError) => {
+                    return <span className="text-xs">{_err.message.replaceAll("%20", " ")}</span>;
+                },
+                success: () => {
+                    res();
+                    return "Scripts saved";
+                }
+            });
+        })
+    }
+
 
 }
 

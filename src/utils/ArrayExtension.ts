@@ -14,6 +14,7 @@ declare global {
     interface Array<T> {
         toDict(cb: callback<T>): { [key: string]: T }
         toArrayDict(cb: callback<T>): { [key: string]: T[] }
+        descompose<G>(): G[]
     }
 }
 
@@ -43,4 +44,18 @@ Array.prototype.toArrayDict = function <T>(this: Array<T>, cb: callback<T>) {
         }
     });
     return dict;
+}
+
+Array.prototype.descompose = function <T>(this: Array<Array<T>>) {
+    const final: T[] = [];
+
+    this.forEach(item => {
+        if(Array.isArray(item)) {
+            final.push(...item);
+        } else {
+            final.push(item);
+        }
+    });
+
+    return final;
 }

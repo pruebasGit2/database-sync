@@ -65,7 +65,11 @@ export interface Script {
  */
 export interface DownloadScriptsRequest {
     /**
-     * @generated from protobuf field: repeated string scripts = 1;
+     * @generated from protobuf field: string path = 1;
+     */
+    path: string;
+    /**
+     * @generated from protobuf field: repeated string scripts = 2;
      */
     scripts: string[];
 }
@@ -285,11 +289,13 @@ export const Script = new Script$Type();
 class DownloadScriptsRequest$Type extends MessageType<DownloadScriptsRequest> {
     constructor() {
         super("database.DownloadScriptsRequest", [
-            { no: 1, name: "scripts", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
+            { no: 1, name: "path", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "scripts", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<DownloadScriptsRequest>): DownloadScriptsRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
+        message.path = "";
         message.scripts = [];
         if (value !== undefined)
             reflectionMergePartial<DownloadScriptsRequest>(this, message, value);
@@ -300,7 +306,10 @@ class DownloadScriptsRequest$Type extends MessageType<DownloadScriptsRequest> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* repeated string scripts */ 1:
+                case /* string path */ 1:
+                    message.path = reader.string();
+                    break;
+                case /* repeated string scripts */ 2:
                     message.scripts.push(reader.string());
                     break;
                 default:
@@ -315,9 +324,12 @@ class DownloadScriptsRequest$Type extends MessageType<DownloadScriptsRequest> {
         return message;
     }
     internalBinaryWrite(message: DownloadScriptsRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* repeated string scripts = 1; */
+        /* string path = 1; */
+        if (message.path !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.path);
+        /* repeated string scripts = 2; */
         for (let i = 0; i < message.scripts.length; i++)
-            writer.tag(1, WireType.LengthDelimited).string(message.scripts[i]);
+            writer.tag(2, WireType.LengthDelimited).string(message.scripts[i]);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

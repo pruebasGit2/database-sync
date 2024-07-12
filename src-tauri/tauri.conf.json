@@ -22,6 +22,9 @@
         "unmaximize": true,
         "unminimize": true,
         "startDragging": true
+      },
+      "dialog": {
+        "open": true
       }
     },
     "bundle": {

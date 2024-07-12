@@ -1,7 +1,7 @@
-use crate::{compare::database::Db, database::esquema::Esquema, proto::{self, Connection, Databases, GetScriptsRequest, Script}};
+use crate::{compare::database::Db, database::esquema::Esquema, proto::{self, Connection, Databases, DownloadScriptsRequest, GetScriptsRequest, Script}, utils::error_utils::DbError};
 
 use proto::database_server::Database;
-use tokio::sync::mpsc;
+use tokio::{fs::File, io::AsyncWriteExt, sync::mpsc};
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
 
@@ -88,4 +88,25 @@ impl Database for DatabaseService {
 
         Ok(Response::new(Self::GetScriptsStream::new(rx)))
     }
+
+    async fn download_scripts(
+        &self,
+        _request: Request<DownloadScriptsRequest>
+    ) -> Result<Response<()>, Status> {
+        let mut path = _request.get_ref().path.to_owned(); 
+        let scripts = _request.get_ref().scripts.to_owned();
+
+        path.push_str("\\sync_database.sql");
+
+        let mut file = match File::create(path).await {
+            Ok(file) => file,
+            Err(err) => return Err(Status::new(tonic::Code::Unknown, DbError::Io(err))),
+        };
+
+        match file.write_all(scripts.join("\r\n").as_bytes()).await {
+            Ok(_) => Ok(Response::new(())),
+            Err(err) => Err(Status::new(tonic::Code::Unknown, DbError::Io(err))),
+        }
+    }
+
 }

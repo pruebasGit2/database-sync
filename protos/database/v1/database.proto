@@ -30,5 +30,6 @@ message Script {
 }
 
 message DownloadScriptsRequest {
-  repeated string scripts = 1;
+  string path = 1;
+  repeated string scripts = 2;
 }

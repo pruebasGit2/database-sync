@@ -22,7 +22,7 @@ impl Db {
             .collect();
 
         for table in tables {
-            _tables.insert(table.name.clone(), table);
+            _tables.insert(table.get_ref(), table);
         }
 
         Db { name, tables: _tables }
@@ -32,17 +32,20 @@ impl Db {
         
         let mut scripts: Vec<String> = Vec::new();
 
+        // iterate over database tables
         for table in self.tables.values_mut() {
-            
-            if let Some(other_table) = other_db.tables.get_mut(&table.name) {
+            // check if other database has table
+            if let Some(other_table) = other_db.tables.get_mut(&table.get_ref()) {
+                // iterate over other table columns
                 for column in table.columns.values_mut() {
                     if let Some(_other_column) = other_table.columns.get_mut(&column.name) {
-
+                        // if column exist check the data type
                     } else {
-                        scripts.push(column.alter_add(table.database.clone()));
+                        scripts.push(column.alter_add(other_table.get_full_ref()));
                     }
                 }
             } else {
+                // Create table if not exists in other database
                 scripts.push(table.script());
             }
 
@@ -53,8 +56,10 @@ impl Db {
 
 }
 
+
 pub struct Table {
     pub name: String,
+    pub schema: String,
     pub database: String,
     pub columns: HashMap<String, Column>
 }
@@ -63,9 +68,13 @@ impl Table {
 
     pub fn new(database: String, columns: Vec<Esquema>) -> Self {
 
-        let name = if let Some(first) = columns.first() {
-            first.table_name.clone()
-        } else { String::new() };
+        let mut name = String::new();
+        let mut schema = String::new();
+
+        if let Some(first) = columns.first() {
+            name = first.table_name.clone();
+            schema = first.table_schema.clone();
+        }
 
         let mut _columns: HashMap<String, Column> = HashMap::new();
 
@@ -73,7 +82,7 @@ impl Table {
             _columns.insert(column.column_name.clone(), Column::new(column));
         }
 
-        Table { name, database, columns: _columns }
+        Table { name, schema, database, columns: _columns }
     }
 
     pub fn script(&mut self) -> String
@@ -90,8 +99,15 @@ impl Table {
 CREATE TABLE {}(
     {}
 )
-GO
-"#, self.database, columns)
+GO"#, self.get_full_ref(), columns)
+    }
+
+    pub fn get_ref(&self) -> String {
+        format!("[{}].[{}]", self.schema, self.name)
+    }
+
+    pub fn get_full_ref(&self) -> String {
+        format!("[{}].[{}].[{}]", self.database, self.schema, self.name)
     }
 
 }
@@ -145,11 +161,10 @@ impl Column {
         items.iter().filter(|item| *item != "").join(" ")
     }
 
-    pub  fn alter_add(&mut self, database: String) -> String
+    pub  fn alter_add(&mut self, table: String) -> String
     {
-        format!("ALTER TABLE {} ADD {}", database, self.script(true))
+        format!("ALTER TABLE {} ADD {}\r\nGO", table, self.script(true))
     }
-
 
     fn get_name(&self) -> String { 
         format!("[{}]", self.name)
@@ -160,7 +175,7 @@ impl Column {
     }
     
     fn get_len(&self) -> String { 
-        if self.data_type.clone() == "text" {
+        if !self.data_type.eq("text") {
             if let Some(len) = self.character_maximum_length {
                 if len == -1 {
                     String::from("(MAX)")
