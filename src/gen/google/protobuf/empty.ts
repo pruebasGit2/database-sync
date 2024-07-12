@@ -65,7 +65,7 @@ class Empty$Type extends MessageType<Empty> {
             reflectionMergePartial<Empty>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Empty): Empty {
+    internalBinaryRead(_reader: IBinaryReader, _length: number, _options: BinaryReadOptions, target?: Empty): Empty {
         return target ?? this.create();
     }
     internalBinaryWrite(message: Empty, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
