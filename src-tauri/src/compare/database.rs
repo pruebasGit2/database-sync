@@ -46,7 +46,7 @@ impl Db {
                 }
             } else {
                 // Create table if not exists in other database
-                scripts.push(table.script());
+                scripts.push(table.script(other_db.name.clone()));
             }
 
         }
@@ -85,7 +85,7 @@ impl Table {
         Table { name, schema, database, columns: _columns }
     }
 
-    pub fn script(&mut self) -> String
+    pub fn script(&mut self, db_name: String) -> String
     {
         let mut columns_created = Vec::new();
 
@@ -93,13 +93,13 @@ impl Table {
             columns_created.push(format!("{}", column.script(false)));
         }
 
-        let columns = columns_created.join(",\r\n");
+        let columns = columns_created.join(",\r\n\t");
 
         format!(r#"
-CREATE TABLE {}(
-    {}
+CREATE TABLE [{}].{}(
+{}
 )
-GO"#, self.get_full_ref(), columns)
+GO"#, db_name, self.get_ref(), format!("\t{}", columns))
     }
 
     pub fn get_ref(&self) -> String {

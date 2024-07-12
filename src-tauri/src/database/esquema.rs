@@ -25,7 +25,7 @@ impl Esquema {
 
     pub fn get_db(&self) -> String
     {
-        format!("[{}].[{}]", self.column_name, self.table_name)
+        format!("[{}].[{}]", self.table_schema, self.table_name)
     }
 
     pub async fn get_all(cstr: &str, database: &str) -> Result<Vec<Esquema>, DbError> {
