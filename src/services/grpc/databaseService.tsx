@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 import { RpcError } from "@protobuf-ts/runtime-rpc";
 
 const transport = new GrpcWebFetchTransport({
-    baseUrl: "http://192.168.10.12:3500",
+    baseUrl: "http://[::1]:7777",
     format: "binary"
 });
 

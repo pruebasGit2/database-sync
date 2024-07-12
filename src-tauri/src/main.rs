@@ -16,11 +16,9 @@ use tokio::spawn;
 use tonic::transport::Server;
 
 pub async fn run_grpc_server() -> Result<(), Box<dyn std::error::Error>> {
-    let addr = "192.168.10.12:3500".parse().unwrap();
+    let addr = "[::1]:7777".parse().unwrap();
 
     let sv = DatabaseServer::new(DatabaseService::new());
-
-    println!("[grpc-server]: listening on: {}", addr);
 
     Server::builder()
         .accept_http1(true)
@@ -34,10 +32,7 @@ pub async fn run_grpc_server() -> Result<(), Box<dyn std::error::Error>> {
 #[tokio::main]
 async fn main() {
     spawn(async move {
-        println!("START");
-        if let Err(e) = run_grpc_server().await {
-            eprintln!("Failed to run gRPC server: {}", e);
-        }
+        let _ = run_grpc_server().await;
     });
 
     tauri::Builder::default()
