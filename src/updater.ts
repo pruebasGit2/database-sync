@@ -1,15 +1,15 @@
 import {
     checkUpdate,
-    installUpdate,
-    onUpdaterEvent,
+    //installUpdate,
+    //onUpdaterEvent,
 } from '@tauri-apps/api/updater'
-import { relaunch } from '@tauri-apps/api/process'
+//import { relaunch } from '@tauri-apps/api/process'
 
 export async function Updater() {
-    const unlisten = await onUpdaterEvent(({ error, status }) => {
-        // This will log all updater events, including status updates and errors.
-        console.log('Updater event', error, status)
-    })
+    //const unlisten = await onUpdaterEvent(({ error, status }) => {
+    //    // This will log all updater events, including status updates and errors.
+    //    console.log('Updater event', error, status)
+    //})
 
     try {
         const { shouldUpdate, manifest } = await checkUpdate()
