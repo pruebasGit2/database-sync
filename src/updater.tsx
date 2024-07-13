@@ -1,9 +1,11 @@
 import {
     checkUpdate,
-    //installUpdate,
-    //onUpdaterEvent,
+    installUpdate,
+    onUpdaterEvent,
 } from '@tauri-apps/api/updater'
-//import { relaunch } from '@tauri-apps/api/process'
+import toast from 'react-hot-toast';
+import { Button } from './pages/main/main';
+import { relaunch } from '@tauri-apps/api/process'
 
 export async function Updater() {
     //const unlisten = await onUpdaterEvent(({ error, status }) => {
@@ -16,16 +18,25 @@ export async function Updater() {
 
         if (shouldUpdate) {
             // You could show a dialog asking the user if they want to install the update here.
-            console.log(
-                `Installing update ${manifest?.version}, ${manifest?.date}, ${manifest?.body}`
-            )
+            toast((t) => (
+                <span>
+                    New version available <b>{manifest?.version}</b>
+                    <Button onClick={async () => {
+                        await installUpdate()
+                        await relaunch()
+                        toast.dismiss(t.id);
+                    }}>
+                        Update
+                    </Button>
+                </span>
+            ), {
+                duration: 999
+            });
 
             // Install the update. This will also restart the app on Windows!
-            //await installUpdate()
 
             // On macOS and Linux you will need to restart the app manually.
             // You could use this step to display another confirmation dialog.
-            //await relaunch()
         }
     } catch (error) {
         console.error(error)

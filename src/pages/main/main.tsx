@@ -253,7 +253,7 @@ type ButtonProps = {
     children?: ReactNode
 }
 
-const Button = ({ onClick, disabled, children }: ButtonProps) => {
+export const Button = ({ onClick, disabled, children }: ButtonProps) => {
     return (
         <button
             disabled={disabled}
